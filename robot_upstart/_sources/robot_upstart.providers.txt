@@ -1,8 +1,0 @@
-Providers
-=========
-
-.. autoclass:: robot_upstart.providers.Generic
-    :members:
-
-.. autoclass:: robot_upstart.providers.Upstart
-    :members:

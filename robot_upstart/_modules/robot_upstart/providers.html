@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="top" title="robot_upstart 0.0.6 documentation" href="../../index.html" />
-    <link rel="up" title="robot_upstart" href="../robot_upstart.html" /> 
+    <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -37,8 +37,7 @@
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li><a href="../../index.html">robot_upstart 0.0.6 documentation</a> &raquo;</li>
-          <li><a href="../index.html" >Module code</a> &raquo;</li>
-          <li><a href="../robot_upstart.html" accesskey="U">robot_upstart</a> &raquo;</li> 
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -111,8 +110,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">job_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s">&quot;etc/ros&quot;</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">rosdistro</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&quot;.d&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">job_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s">&quot;etc/ros&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">rosdistro</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&quot;.d&quot;</span><span class="p">)</span>
 
         <span class="c"># Make up list of files to copy to system locations.</span>
         <span class="n">installation_files</span> <span class="o">=</span> <span class="p">{}</span>
@@ -128,11 +127,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">interpreter</span> <span class="o">=</span> <span class="n">em</span><span class="o">.</span><span class="n">Interpreter</span><span class="p">(</span><span class="nb">globals</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
 
             <span class="n">installation_files</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s">&quot;etc/init&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&quot;.conf&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_template</span><span class="p">(</span><span class="s">&quot;templates/job.conf.em&quot;</span><span class="p">),</span> <span class="s">&quot;mode&quot;</span><span class="p">:</span> <span class="mi">644</span><span class="p">}</span>
+                <span class="s">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_template</span><span class="p">(</span><span class="s">&quot;templates/job.conf.em&quot;</span><span class="p">),</span> <span class="s">&quot;mode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="n">o644</span><span class="p">}</span>
             <span class="n">installation_files</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s">&quot;usr/sbin&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&quot;-start&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_template</span><span class="p">(</span><span class="s">&quot;templates/job-start.em&quot;</span><span class="p">),</span> <span class="s">&quot;mode&quot;</span><span class="p">:</span> <span class="mi">755</span><span class="p">}</span>
+                <span class="s">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_template</span><span class="p">(</span><span class="s">&quot;templates/job-start.em&quot;</span><span class="p">),</span> <span class="s">&quot;mode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="n">o755</span><span class="p">}</span>
             <span class="n">installation_files</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s">&quot;usr/sbin&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&quot;-stop&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_template</span><span class="p">(</span><span class="s">&quot;templates/job-stop.em&quot;</span><span class="p">),</span> <span class="s">&quot;mode&quot;</span><span class="p">:</span> <span class="mi">755</span><span class="p">}</span>
+                <span class="s">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_template</span><span class="p">(</span><span class="s">&quot;templates/job-stop.em&quot;</span><span class="p">),</span> <span class="s">&quot;mode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="n">o755</span><span class="p">}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">interpreter</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">installation_files</span>
@@ -177,8 +176,7 @@
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li><a href="../../index.html">robot_upstart 0.0.6 documentation</a> &raquo;</li>
-          <li><a href="../index.html" >Module code</a> &raquo;</li>
-          <li><a href="../robot_upstart.html" >robot_upstart</a> &raquo;</li> 
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

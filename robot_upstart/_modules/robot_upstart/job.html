@@ -1,0 +1,263 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>robot_upstart.job &mdash; robot_upstart 0.0.6 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="robot_upstart 0.0.6 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">robot_upstart 0.0.6 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for robot_upstart.job</h1><div class="highlight"><pre>
+<span class="c"># Software License Agreement (BSD)</span>
+<span class="c">#</span>
+<span class="c"># @author    Mike Purvis &lt;mpurvis@clearpathrobotics.com&gt;</span>
+<span class="c"># @copyright (c) 2015, Clearpath Robotics, Inc., All rights reserved.</span>
+<span class="c">#</span>
+<span class="c"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that</span>
+<span class="c"># the following conditions are met:</span>
+<span class="c"># * Redistributions of source code must retain the above copyright notice, this list of conditions and the</span>
+<span class="c">#   following disclaimer.</span>
+<span class="c"># * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the</span>
+<span class="c">#   following disclaimer in the documentation and/or other materials provided with the distribution.</span>
+<span class="c"># * Neither the name of Clearpath Robotics nor the names of its contributors may be used to endorse or</span>
+<span class="c">#   promote products derived from this software without specific prior written permission.</span>
+<span class="c">#</span>
+<span class="c"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED</span>
+<span class="c"># WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A</span>
+<span class="c"># PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="c"># ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED</span>
+<span class="c"># TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)</span>
+<span class="c"># HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING</span>
+<span class="c"># NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE</span>
+<span class="c"># POSSIBILITY OF SUCH DAMAGE.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This file defines the Job class, which is the primary code API to robot_upstart.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">getpass</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span> <span class="k">as</span> <span class="n">glob_files</span>
+
+<span class="kn">from</span> <span class="nn">catkin.find_in_workspaces</span> <span class="kn">import</span> <span class="n">find_in_workspaces</span>
+
+<span class="kn">import</span> <span class="nn">providers</span>
+
+
+<div class="viewcode-block" id="Job"><a class="viewcode-back" href="../../jobs.html#robot_upstart.job.Job">[docs]</a><span class="k">class</span> <span class="nc">Job</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Represents a ROS configuration to launch on machine startup. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;ros&quot;</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">workspace_setup</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">rosdistro</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">master_uri</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">log_path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Construct a new Job definition.</span>
+
+<span class="sd">        :param name: Name of job to create. Defaults to &quot;ros&quot;, but you might</span>
+<span class="sd">            prefer to use the name of your platform.</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param interface: Network interface to bring ROS up with. If specified,</span>
+<span class="sd">            the job will come up with that network interface, and ROS_IP will be set</span>
+<span class="sd">            to that interface&#39;s IP address. If unspecified, the job will come up</span>
+<span class="sd">            on system startup, and ROS_HOSTNAME will be set to the system&#39;s hostname.</span>
+<span class="sd">        :type interface: str</span>
+<span class="sd">        :param user: Unprivileged user to launch the job as. Defaults to the user</span>
+<span class="sd">            creating the job.</span>
+<span class="sd">        :type user: str</span>
+<span class="sd">        :param workspace_setup: Location of the workspace setup file to source for</span>
+<span class="sd">            the job&#39;s ROS context. Defaults to the current workspace.</span>
+<span class="sd">        :type workspace_setup: str</span>
+<span class="sd">        :param rosdistro: rosdistro to use for the /etc/ros/DISTRO path. Defaults</span>
+<span class="sd">            to $ROS_DISTRO from the current environment.</span>
+<span class="sd">        :type rosdistro: str</span>
+<span class="sd">        :param master_uri: For systems with multiple computers, you may want this</span>
+<span class="sd">            job to launch with ROS_MASTER_URI pointing to another machine.</span>
+<span class="sd">        :type master_uri: str</span>
+<span class="sd">        :param log_path: The location to set ROS_LOG_DIR to. If changed from the</span>
+<span class="sd">            default of using /tmp, it is the user&#39;s responsibility to manage log</span>
+<span class="sd">            rotation.</span>
+<span class="sd">        :type log_path: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">interface</span>
+
+        <span class="c"># Fall back on current user as the user to run ROS as.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">user</span> <span class="ow">or</span> <span class="n">getpass</span><span class="o">.</span><span class="n">getuser</span><span class="p">()</span>
+
+        <span class="c"># Fall back on current workspace setup file if not explicitly specified.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">workspace_setup</span> <span class="o">=</span> <span class="n">workspace_setup</span> <span class="ow">or</span> \
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;CMAKE_PREFIX_PATH&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;/setup.bash&#39;</span>
+
+        <span class="c"># Fall back on current distro if not otherwise specified.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rosdistro</span> <span class="o">=</span> <span class="n">rosdistro</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;ROS_DISTRO&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">master_uri</span> <span class="o">=</span> <span class="n">master_uri</span> <span class="ow">or</span> <span class="s">&quot;http://127.0.0.1:11311&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">=</span> <span class="n">log_path</span> <span class="ow">or</span> <span class="s">&quot;/tmp&quot;</span>
+
+        <span class="c"># Override this to false if you want to bypass generating the</span>
+        <span class="c"># upstart conf file.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generate_system_files</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="c"># Set of files to be installed for the job. This is only launchers</span>
+        <span class="c"># and other user-specified configs--- nothing related to the system</span>
+        <span class="c"># startup job itself. List of strs.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="Job.add"><a class="viewcode-back" href="../../jobs.html#robot_upstart.job.Job.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">glob</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Add launch or other configuration files to Job.</span>
+
+<span class="sd">        Files may be specified using relative, absolute, or package-relative</span>
+<span class="sd">        paths. Files may also be specified using shell globs.</span>
+
+<span class="sd">        :param package: Optionally specify a package to search for the file</span>
+<span class="sd">            or glob relative-to.</span>
+<span class="sd">        :type package: str</span>
+<span class="sd">        :param filename: Name of a file to add to the job. Relative to the</span>
+<span class="sd">            package path, if specified.</span>
+<span class="sd">        :type filename: str</span>
+<span class="sd">        :param glob: Shell glob of files to add to the job. Relative to the</span>
+<span class="sd">            package path, if specified.</span>
+<span class="sd">        :type glob: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">package</span><span class="p">:</span>
+            <span class="n">search_paths</span> <span class="o">=</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">find_in_workspaces</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">package</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">search_paths</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">,)</span>
+
+        <span class="k">if</span> <span class="n">glob</span> <span class="ow">and</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;You must specify only an exact filename or a glob, not both.&quot;</span><span class="p">)</span>
+
+        <span class="c"># See: https://docs.python.org/2/library/os.html#os.getlogin</span>
+        <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">search_paths</span><span class="p">:</span>
+                <span class="n">candidate</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">candidate</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">glob</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">search_paths</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">glob_files</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">glob</span><span class="p">)))</span>
+</div>
+<div class="viewcode-block" id="Job.install"><a class="viewcode-back" href="../../jobs.html#robot_upstart.job.Job.install">[docs]</a>    <span class="k">def</span> <span class="nf">install</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="n">sudo</span><span class="o">=</span><span class="s">&quot;/usr/bin/sudo&quot;</span><span class="p">,</span> <span class="n">Provider</span><span class="o">=</span><span class="n">providers</span><span class="o">.</span><span class="n">Upstart</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Install the job definition to the system.</span>
+
+<span class="sd">        :param root: Override the root to install to, useful for testing.</span>
+<span class="sd">        :type root: str</span>
+<span class="sd">        :param sudo: Override which sudo is used, useful for testing or for making</span>
+<span class="sd">            it use gksudo instead.</span>
+<span class="sd">        :type sudo: str</span>
+<span class="sd">        :param provider: Override to use your own generator function for the system</span>
+<span class="sd">            file preparation.</span>
+<span class="sd">        :type provider: Provider</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># This is a recipe of files and their contents which is pickled up and</span>
+        <span class="c"># passed to a sudo process so that it can create the actual files,</span>
+        <span class="c"># without needing a ROS workspace or any other environmental setup.</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">Provider</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">installation_files</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+
+        <span class="n">create_files_exec</span> <span class="o">=</span> <span class="n">find_in_workspaces</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s">&quot;robot_upstart&quot;</span><span class="p">,</span>
+                                               <span class="n">path</span><span class="o">=</span><span class="s">&quot;scripts/create_files&quot;</span><span class="p">,</span>
+                                               <span class="n">first_match_only</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;Preparing to install files to the following paths:&quot;</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">installation_files</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">print</span> <span class="s">&quot;  </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+
+        <span class="c"># If sudo is specified, then the user will be prompted at this point.</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">create_files_exec</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">sudo</span><span class="p">:</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sudo</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;Now calling: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span> <span class="o">+</span> <span class="p">[</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">installation_files</span><span class="p">)])</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;Installation of files succeeded.&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;Error encountered installing files.&quot;</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">robot_upstart 0.0.6 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Mike Purvis.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

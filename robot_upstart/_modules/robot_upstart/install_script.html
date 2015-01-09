@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>robot_upstart.install_script &mdash; robot_upstart 0.0.6 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="robot_upstart 0.0.6 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">robot_upstart 0.0.6 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for robot_upstart.install_script</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># Software License Agreement (BSD)</span>
+<span class="c">#</span>
+<span class="c"># @author    Mike Purvis &lt;mpurvis@clearpathrobotics.com&gt;</span>
+<span class="c"># @copyright (c) 2015, Clearpath Robotics, Inc., All rights reserved.</span>
+<span class="c">#</span>
+<span class="c"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that</span>
+<span class="c"># the following conditions are met:</span>
+<span class="c"># * Redistributions of source code must retain the above copyright notice, this list of conditions and the</span>
+<span class="c">#   following disclaimer.</span>
+<span class="c"># * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the</span>
+<span class="c">#   following disclaimer in the documentation and/or other materials provided with the distribution.</span>
+<span class="c"># * Neither the name of Clearpath Robotics nor the names of its contributors may be used to endorse or</span>
+<span class="c">#   promote products derived from this software without specific prior written permission.</span>
+<span class="c">#</span>
+<span class="c"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED</span>
+<span class="c"># WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A</span>
+<span class="c"># PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="c"># ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED</span>
+<span class="c"># TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)</span>
+<span class="c"># HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING</span>
+<span class="c"># NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE</span>
+<span class="c"># POSSIBILITY OF SUCH DAMAGE.</span>
+
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">robot_upstart</span>
+<span class="kn">from</span> <span class="nn">catkin.find_in_workspaces</span> <span class="kn">import</span> <span class="n">find_in_workspaces</span>
+
+
+<span class="k">def</span> <span class="nf">get_argument_parser</span><span class="p">():</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span>
+        <span class="sd">&quot;&quot;&quot;Use this tool to quickly and easily create system startup jobs</span>
+<span class="sd">        which run one or more ROS launch files as a daemonized background</span>
+<span class="sd">        process on your computer. More advanced users will prefer to access</span>
+<span class="sd">        the Python API from their own setup scripts, but this exists as a</span>
+<span class="sd">        simple helper, an example, and a compatibility shim for previous</span>
+<span class="sd">        versions of robot_upstart which were bash-based.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;pkgpath&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="p">(</span><span class="s">&quot;pkg/path&quot;</span><span class="p">,),</span>
+                   <span class="n">help</span><span class="o">=</span><span class="s">&quot;Package and path to install job launch files from.&quot;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--job&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                   <span class="n">help</span><span class="o">=</span><span class="s">&quot;Specify job name. If unspecified, will be constructed from package name.&quot;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--interface&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;ethN&quot;</span><span class="p">,</span>
+                   <span class="n">help</span><span class="o">=</span><span class="s">&quot;Specify network interface name to associate job with.&quot;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--user&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;NAME&quot;</span><span class="p">,</span>
+                   <span class="n">help</span><span class="o">=</span><span class="s">&quot;Specify user to launch job as.&quot;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--setup&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;path/to/setup.bash&quot;</span><span class="p">,</span>
+                   <span class="n">help</span><span class="o">=</span><span class="s">&quot;Specify workspace setup file for the job launch context.&quot;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--rosdistro&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;DISTRO&quot;</span><span class="p">,</span>
+                   <span class="n">help</span><span class="o">=</span><span class="s">&quot;Specify ROS distro this is for.&quot;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--master&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;http://MASTER:11311&quot;</span><span class="p">,</span>
+                   <span class="n">help</span><span class="o">=</span><span class="s">&quot;Specify an alternative ROS_MASTER_URI for the job launch context.&quot;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--logdir&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;path/to/logs&quot;</span><span class="p">,</span>
+                   <span class="n">help</span><span class="o">=</span><span class="s">&quot;Specify an a value for ROS_LOG_DIR in the job launch context.&quot;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--augment&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
+                   <span class="n">help</span><span class="o">=</span><span class="s">&quot;Bypass creating the job, and only copy user files. Assumes the job was previously created.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">p</span>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../install.html#robot_upstart.install_script.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; Implementation of the ``install`` script.&quot;&quot;&quot;</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">get_argument_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">pkg</span><span class="p">,</span> <span class="n">pkgpath</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">pkgpath</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">job_name</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">job</span> <span class="ow">or</span> <span class="n">pkg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c"># Any unspecified arguments are on the args object as None. These are filled</span>
+    <span class="c"># in by the Job constructor when passed as Nones.</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">robot_upstart</span><span class="o">.</span><span class="n">Job</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">job_name</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">interface</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+        <span class="n">workspace_setup</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">setup</span><span class="p">,</span> <span class="n">rosdistro</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">rosdistro</span><span class="p">,</span>
+        <span class="n">master_uri</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">master</span><span class="p">,</span> <span class="n">log_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">logdir</span><span class="p">)</span>
+
+    <span class="n">found_path</span> <span class="o">=</span> <span class="n">find_in_workspaces</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">pkg</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">pkgpath</span><span class="p">,</span> <span class="n">first_match_only</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">found_path</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;Unable to located path </span><span class="si">%s</span><span class="s"> in package </span><span class="si">%s</span><span class="s">. Installation aborted.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pkgpath</span><span class="p">,</span> <span class="n">pkg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">found_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="c"># Single file, install just that.</span>
+        <span class="n">j</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">package</span><span class="o">=</span><span class="n">pkg</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">pkgpath</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># Directory found, install everything within.</span>
+        <span class="n">j</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">package</span><span class="o">=</span><span class="n">pkg</span><span class="p">,</span> <span class="n">glob</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pkgpath</span><span class="p">,</span> <span class="s">&quot;*&quot;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">augment</span><span class="p">:</span>
+        <span class="n">j</span><span class="o">.</span><span class="n">generate_system_files</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="n">j</span><span class="o">.</span><span class="n">install</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="mi">0</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">robot_upstart 0.0.6 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Mike Purvis.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
