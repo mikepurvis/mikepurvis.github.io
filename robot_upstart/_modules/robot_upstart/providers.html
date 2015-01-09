@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>robot_upstart.providers &mdash; robot_upstart 0.0.6 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="robot_upstart 0.0.6 documentation" href="../../index.html" />
+    <link rel="up" title="robot_upstart" href="../robot_upstart.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">robot_upstart 0.0.6 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../robot_upstart.html" accesskey="U">robot_upstart</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for robot_upstart.providers</h1><div class="highlight"><pre>
+<span class="c"># Software License Agreement (BSD)</span>
+<span class="c">#</span>
+<span class="c"># @author    Mike Purvis &lt;mpurvis@clearpathrobotics.com&gt;</span>
+<span class="c"># @copyright (c) 2015, Clearpath Robotics, Inc., All rights reserved.</span>
+<span class="c">#</span>
+<span class="c"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that</span>
+<span class="c"># the following conditions are met:</span>
+<span class="c"># * Redistributions of source code must retain the above copyright notice, this list of conditions and the</span>
+<span class="c">#   following disclaimer.</span>
+<span class="c"># * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the</span>
+<span class="c">#   following disclaimer in the documentation and/or other materials provided with the distribution.</span>
+<span class="c"># * Neither the name of Clearpath Robotics nor the names of its contributors may be used to endorse or</span>
+<span class="c">#   promote products derived from this software without specific prior written permission.</span>
+<span class="c">#</span>
+<span class="c"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED</span>
+<span class="c"># WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A</span>
+<span class="c"># PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="c"># ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED</span>
+<span class="c"># TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)</span>
+<span class="c"># HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING</span>
+<span class="c"># NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE</span>
+<span class="c"># POSSIBILITY OF SUCH DAMAGE.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">These classes implement the translation from user-intended behaviours</span>
+<span class="sd">as specified in the state of the Job class to the system-specific configuration</span>
+<span class="sd">files. At present, there is only an upstart configuration, but similar providers</span>
+<span class="sd">could be defined for systemd, supervisor, launchd, or other systems.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">em</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">StringIO</span>
+
+<span class="kn">from</span> <span class="nn">catkin.find_in_workspaces</span> <span class="kn">import</span> <span class="n">find_in_workspaces</span>
+
+
+<div class="viewcode-block" id="Generic"><a class="viewcode-back" href="../../providers.html#robot_upstart.providers.Generic">[docs]</a><span class="k">class</span> <span class="nc">Generic</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Provides only a common constructor for the moment, but as further</span>
+<span class="sd">        providers are implemented, may provide a place to store configuration</span>
+<span class="sd">        common to them. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Construct a new Provider.</span>
+
+<span class="sd">        :param root: The filesystem location to prefix all file-install</span>
+<span class="sd">            commands with.</span>
+<span class="sd">        :type root: str</span>
+<span class="sd">        :param job: The job definition to transform to a set of system files.</span>
+<span class="sd">        :type job: :py:class:robot_upstart.Job</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job</span> <span class="o">=</span> <span class="n">job</span>
+
+</div>
+<div class="viewcode-block" id="Upstart"><a class="viewcode-back" href="../../providers.html#robot_upstart.providers.Upstart">[docs]</a><span class="k">class</span> <span class="nc">Upstart</span><span class="p">(</span><span class="n">Generic</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; The Upstart implementation places the user-specified files in ``/etc/ros/DISTRO/NAME.d``,</span>
+<span class="sd">    and creates an upstart job configuration in ``/etc/init/NAME.d``. Two additional</span>
+<span class="sd">    helper scripts are created for starting and stopping the job, places in</span>
+<span class="sd">    ``/usr/sbin``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">job_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s">&quot;etc/ros&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">rosdistro</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&quot;.d&quot;</span><span class="p">)</span>
+
+        <span class="c"># Make up list of files to copy to system locations.</span>
+        <span class="n">installation_files</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">files</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">dest_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">job_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+                <span class="n">installation_files</span><span class="p">[</span><span class="n">dest_filename</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;content&quot;</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()}</span>
+
+        <span class="c"># This is optional to support the old --augment flag where a &quot;job&quot; only adds</span>
+        <span class="c"># launch files to an existing configuration.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">generate_system_files</span><span class="p">):</span>
+            <span class="c"># Share a single instance of the empy interpreter.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interpreter</span> <span class="o">=</span> <span class="n">em</span><span class="o">.</span><span class="n">Interpreter</span><span class="p">(</span><span class="nb">globals</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+            <span class="n">installation_files</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s">&quot;etc/init&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&quot;.conf&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_template</span><span class="p">(</span><span class="s">&quot;templates/job.conf.em&quot;</span><span class="p">),</span> <span class="s">&quot;mode&quot;</span><span class="p">:</span> <span class="mi">644</span><span class="p">}</span>
+            <span class="n">installation_files</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s">&quot;usr/sbin&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&quot;-start&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_template</span><span class="p">(</span><span class="s">&quot;templates/job-start.em&quot;</span><span class="p">),</span> <span class="s">&quot;mode&quot;</span><span class="p">:</span> <span class="mi">755</span><span class="p">}</span>
+            <span class="n">installation_files</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s">&quot;usr/sbin&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&quot;-stop&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_template</span><span class="p">(</span><span class="s">&quot;templates/job-stop.em&quot;</span><span class="p">),</span> <span class="s">&quot;mode&quot;</span><span class="p">:</span> <span class="mi">755</span><span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interpreter</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">installation_files</span>
+
+    <span class="k">def</span> <span class="nf">_fill_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interpreter</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">StringIO</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interpreter</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">find_in_workspaces</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s">&quot;robot_upstart&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">template</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interpreter</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpreter</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">robot_upstart 0.0.6 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../robot_upstart.html" >robot_upstart</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Mike Purvis.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

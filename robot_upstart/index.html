@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Upstart for ROS Robots &mdash; robot_upstart 0.0.6 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="robot_upstart 0.0.6 documentation" href="#" />
+    <link rel="next" title="The install script" href="install.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="The install script"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">robot_upstart 0.0.6 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="upstart-for-ros-robots">
+<h1>Upstart for ROS Robots<a class="headerlink" href="#upstart-for-ros-robots" title="Permalink to this headline">¶</a></h1>
+<p>This package aims to assist with creating simple platform-specific jobs
+to start your robot&#8217;s ROS launch files when its PC powers up.</p>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>The basic or one-off usage is with the <tt class="docutils literal"><span class="pre">install</span></tt> script, which can be
+as simple as:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>rosrun robot_upstart install myrobot_bringup/launch/base.launch
+</pre></div>
+</div>
+<p>This will create a job called <tt class="docutils literal"><span class="pre">myrobot</span></tt> on your machine, which launches
+base.launch. It will start automatically when you next start your machine,
+or you can bring it up and down manually:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>sudo service myrobot start
+<span class="nv">$ </span>sudo service myrobot stop
+</pre></div>
+</div>
+<p>If the job is crashing on startup, or you otherwise want to see what is
+being output to the terminal on startup, check the upstart log:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>sudo tail /var/log/upstart/myrobot.log -n 30
+</pre></div>
+</div>
+<p>For more details, please see <a class="reference internal" href="install.html"><em>The install script</em></a>.</p>
+</div>
+<div class="section" id="python-api">
+<h2>Python API<a class="headerlink" href="#python-api" title="Permalink to this headline">¶</a></h2>
+<p>More advanced users or platform maintainers will prefer to script the
+job creation as part of a larger installation script which may do other
+tasks, such as pick and choose which launchers to install based on a
+recipe, interactive wizard, or hardware introspection scheme.</p>
+<p>These users will want to work with the Python API, which is detailed
+in <a class="reference internal" href="jobs.html"><em>Jobs</em></a>.</p>
+</div>
+<div class="section" id="extending">
+<h2>Extending<a class="headerlink" href="#extending" title="Permalink to this headline">¶</a></h2>
+<p>If you&#8217;re interesting in adding support for other init schemes to
+robot_upstart, please see <a class="reference internal" href="providers.html"><em>Providers</em></a>.</p>
+</div>
+<div class="section" id="indexes">
+<h2>Indexes<a class="headerlink" href="#indexes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Upstart for ROS Robots</a><ul>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#python-api">Python API</a></li>
+<li><a class="reference internal" href="#extending">Extending</a></li>
+<li><a class="reference internal" href="#indexes">Indexes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="install.html"
+                        title="next chapter">The <tt class="docutils literal"><span class="pre">install</span></tt> script</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="The install script"
+             >next</a> |</li>
+        <li><a href="#">robot_upstart 0.0.6 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Mike Purvis.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

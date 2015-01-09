@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The install script &mdash; robot_upstart 0.0.6 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="robot_upstart 0.0.6 documentation" href="index.html" />
+    <link rel="next" title="Jobs" href="jobs.html" />
+    <link rel="prev" title="Upstart for ROS Robots" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="jobs.html" title="Jobs"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Upstart for ROS Robots"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">robot_upstart 0.0.6 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="the-install-script">
+<h1>The <tt class="docutils literal"><span class="pre">install</span></tt> script<a class="headerlink" href="#the-install-script" title="Permalink to this headline">¶</a></h1>
+<p>Use this tool to quickly and easily create system startup jobs
+        which run one or more ROS launch files as a daemonized background
+        process on your computer. More advanced users will prefer to access
+        the Python API from their own setup scripts, but this exists as a
+        simple helper, an example, and a compatibility shim for previous
+        versions of robot_upstart which were bash-based.</p>
+<pre class="literal-block">
+usage: install [-h] [--job JOB] [--interface ethN] [--user NAME]
+               [--setup path/to/setup.bash] [--rosdistro DISTRO]
+               [--master http://MASTER:11311] [--logdir path/to/logs]
+               [--augment AUGMENT]
+               pkg/path
+</pre>
+<dl class="docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>pkgpath</kbd></td>
+<td>Package and path to install job launch files from.</td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">--job</span></kbd></td>
+<td>Specify job name. If unspecified, will be constructed from package name.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--interface</span></kbd></td>
+<td>Specify network interface name to associate job with.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--user</span></kbd></td>
+<td>Specify user to launch job as.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--setup</span></kbd></td>
+<td>Specify workspace setup file for the job launch context.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--rosdistro</span></kbd></td>
+<td>Specify ROS distro this is for.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--master</span></kbd></td>
+<td>Specify an alternative ROS_MASTER_URI for the job launch context.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--logdir</span></kbd></td>
+<td>Specify an a value for ROS_LOG_DIR in the job launch context.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--augment</span></kbd></td>
+<td>Bypass creating the job, and only copy user files. Assumes the job was previously created.</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Upstart for ROS Robots</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="jobs.html"
+                        title="next chapter">Jobs</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/install.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="jobs.html" title="Jobs"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Upstart for ROS Robots"
+             >previous</a> |</li>
+        <li><a href="index.html">robot_upstart 0.0.6 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Mike Purvis.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

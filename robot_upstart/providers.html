@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Providers &mdash; robot_upstart 0.0.6 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="robot_upstart 0.0.6 documentation" href="index.html" />
+    <link rel="prev" title="Jobs" href="jobs.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="jobs.html" title="Jobs"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">robot_upstart 0.0.6 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-robot_upstart.providers">
+<span id="providers"></span><h1>Providers<a class="headerlink" href="#module-robot_upstart.providers" title="Permalink to this headline">¶</a></h1>
+<p>These classes implement the translation from user-intended behaviours
+as specified in the state of the Job class to the system-specific configuration
+files. At present, there is only an upstart configuration, but similar providers
+could be defined for systemd, supervisor, launchd, or other systems.</p>
+<dl class="class">
+<dt id="robot_upstart.providers.Generic">
+<em class="property">class </em><tt class="descclassname">robot_upstart.providers.</tt><tt class="descname">Generic</tt><big>(</big><em>root</em>, <em>job</em><big>)</big><a class="reference internal" href="_modules/robot_upstart/providers.html#Generic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robot_upstart.providers.Generic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides only a common constructor for the moment, but as further
+providers are implemented, may provide a place to store configuration
+common to them.</p>
+<p>Construct a new Provider.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>root</strong> (<em>str</em>) &#8211; The filesystem location to prefix all file-install
+commands with.</li>
+<li><strong>job</strong> (<em>:py:class:robot_upstart.Job</em>) &#8211; The job definition to transform to a set of system files.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="robot_upstart.providers.Upstart">
+<em class="property">class </em><tt class="descclassname">robot_upstart.providers.</tt><tt class="descname">Upstart</tt><big>(</big><em>root</em>, <em>job</em><big>)</big><a class="reference internal" href="_modules/robot_upstart/providers.html#Upstart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robot_upstart.providers.Upstart" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Upstart implementation places the user-specified files in <tt class="docutils literal"><span class="pre">/etc/ros/DISTRO/NAME.d</span></tt>,
+and creates an upstart job configuration in <tt class="docutils literal"><span class="pre">/etc/init/NAME.d</span></tt>. Two additional
+helper scripts are created for starting and stopping the job, places in
+<tt class="docutils literal"><span class="pre">/usr/sbin</span></tt>.</p>
+<p>Construct a new Provider.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>root</strong> (<em>str</em>) &#8211; The filesystem location to prefix all file-install
+commands with.</li>
+<li><strong>job</strong> (<em>:py:class:robot_upstart.Job</em>) &#8211; The job definition to transform to a set of system files.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="jobs.html"
+                        title="previous chapter">Jobs</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/providers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="jobs.html" title="Jobs"
+             >previous</a> |</li>
+        <li><a href="index.html">robot_upstart 0.0.6 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Mike Purvis.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

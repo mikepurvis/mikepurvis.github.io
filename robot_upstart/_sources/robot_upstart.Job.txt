@@ -1,0 +1,5 @@
+robot_upstart.Job
+=================
+
+.. autoclass:: robot_upstart.Job
+    :members:
