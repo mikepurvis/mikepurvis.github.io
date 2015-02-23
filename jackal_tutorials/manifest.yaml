@@ -1,0 +1,15 @@
+actions: []
+authors: Mike Purvis <mpurvis@clearpathrobotics.com>
+brief: ''
+bugtracker: ''
+depends:
+- catkin
+- rosdoc_lite
+description: Jackal's tutorials.
+license: BSD
+maintainers: Mike Purvis <mpurvis@clearpathrobotics.com>
+msgs: []
+package_type: package
+repo_url: ''
+srvs: []
+url: http://wiki.ros.org/jackal_msgs

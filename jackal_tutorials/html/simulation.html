@@ -1,0 +1,165 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Simulating Jackal &mdash; jackal_tutorials 0.5.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/clearpath.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.5.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="jackal_tutorials 0.5.1 documentation" href="index.html" />
+    <link rel="next" title="Navigating with Jackal" href="navigation.html" />
+    <link rel="prev" title="Jackal Tutorials" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="navigation.html" title="Navigating with Jackal"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Jackal Tutorials"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">jackal_tutorials 0.5.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="simulating-jackal">
+<h1>Simulating Jackal<a class="headerlink" href="#simulating-jackal" title="Permalink to this headline">¶</a></h1>
+<p>Whether you actually have a Jackal robot or not, the Jackal simulator is a great way to get started with ROS
+robot development. In this tutorial, we will go through the basics of starting Gazebo and Rviz and how to drive
+your Jackal around.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>To get started with the Jackal simulation, make sure you have a <a class="reference external" href="http://wiki.ros.org/ROS/Installation">ROS installation</a> set up on your
+Ubuntu desktop, and install the Jackal-specific metapackages for desktop and simulation:</p>
+<pre class="literal-block">
+sudo apt-get install ros-indigo-jackal-simulator ros-indigo-jackal-desktop
+</pre>
+</div>
+<div class="section" id="launch-gazebo">
+<h2>Launch Gazebo<a class="headerlink" href="#launch-gazebo" title="Permalink to this headline">¶</a></h2>
+<p>We will be using two tools for our Jackal simulation, the first being Gazebo. This is where we get a realistic simulation of our robot, including wheel slippage, skidding, and inertia. It is also possible to insert objects and load maps into Gazebo to simulate sensor data, which we will see in a following tutorial. For now begin by launching gazebo:</p>
+<div class="highlight-bash"><div class="highlight"><pre>roslaunch jackal_gazebo jackal_world.launch
+</pre></div>
+</div>
+<p>attachment:Gazebo.png</p>
+</div>
+<div class="section" id="launch-rviz">
+<h2>Launch rviz<a class="headerlink" href="#launch-rviz" title="Permalink to this headline">¶</a></h2>
+<p>The other tool we will be using is rviz. This allows us to see sensor data from a robot, and give it commands.
+Unlike Gazebo, rviz is not a simulation, only a visualizer. You can using the following launch invocation to
+start rviz with a pre-cooked configuration suitable for visualizing standard Jackal:</p>
+<div class="highlight-bash"><div class="highlight"><pre>roslaunch jackal_viz view_robot.launch
+</pre></div>
+</div>
+<p>attachment:RViz.png</p>
+</div>
+<div class="section" id="driving-jackal">
+<h2>Driving Jackal<a class="headerlink" href="#driving-jackal" title="Permalink to this headline">¶</a></h2>
+<p>Interactive markers are the simplest way to drive Jackal. To do this, select the Interact tool from the
+top toolbar in rviz. You should see red arrows and a blue circle appear around the Jackal model.</p>
+<p>Drag the red arrows in Rviz to move in the linear x and the blue circle to move in the angular z. Rviz shows you
+Jackal moving relative to its odometric frame, but it is also moving relative to the simulated world supplied by
+Gazebo. If you click over to the Gazebo window, you will see Jackal moving within its simulated world. Or, if you
+drive real Jackal using this method, it will have moved in the real world.</p>
+<p>Once you start your own development, have your nodes send <tt class="docutils literal"><span class="pre">geometry_msgs/Twist</span></tt> commands to the <tt class="docutils literal"><span class="pre">cmd_vel</span></tt>
+topic to drive Jackal, either real or simulated. This is the standard ROS interface to differential-drive and
+holonomic ground vehicles.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Simulating Jackal</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#launch-gazebo">Launch Gazebo</a></li>
+<li><a class="reference internal" href="#launch-rviz">Launch rviz</a></li>
+<li><a class="reference internal" href="#driving-jackal">Driving Jackal</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Jackal Tutorials</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="navigation.html"
+                        title="next chapter">Navigating with Jackal</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/simulation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="navigation.html" title="Navigating with Jackal"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Jackal Tutorials"
+             >previous</a> |</li>
+        <li><a href="index.html">jackal_tutorials 0.5.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Clearpath Robotics.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
