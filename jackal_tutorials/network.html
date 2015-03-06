@@ -54,17 +54,123 @@
             
   <div class="section" id="setting-up-jackal-s-network">
 <h1>Setting Up Jackal&#8217;s Network<a class="headerlink" href="#setting-up-jackal-s-network" title="Permalink to this headline">¶</a></h1>
+<p>Jackal is equipped with a combination Wifi + Bluetooth wireless module. On currently-shipping units, this
+is an <a class="reference external" href="http://www.intel.com/content/www/us/en/wireless-products/centrino-advanced-n-6235.html">Intel Centrino Advanced-N 6235</a>. If this is your first unboxing, ensure that Jackal&#8217;s wireless
+antennas are firmly screwed on to the chassis.</p>
 <div class="section" id="first-connection">
 <h2>First Connection<a class="headerlink" href="#first-connection" title="Permalink to this headline">¶</a></h2>
+<p>By default, Jackal&#8217;s wireless is in client mode, looking for the wireless network at the Clearpath factory. In
+order to set it up to connect to your own network, you&#8217;ll have to open up the chassis and connect a network cable to
+the PC&#8217;s <tt class="docutils literal"><span class="pre">STATIC</span></tt> port. The other end of this cable should be connected to your laptop, and you should give yourself an IP address in the <tt class="docutils literal"><span class="pre">192.168.1.x</span></tt> space, such as <tt class="docutils literal"><span class="pre">192.168.1.50</span></tt>. Then, make the connection to Jackal&#8217;s default
+static IP:</p>
+<div class="highlight-bash"><div class="highlight"><pre>ssh administrator@192.168.1.11
+</pre></div>
+</div>
+<p>The default passwork is <tt class="docutils literal"><span class="pre">clearpath</span></tt>. You should now be logged into Jackal as the administrator user.</p>
 </div>
 <div class="section" id="connecting-to-wifi-access-point">
 <h2>Connecting to Wifi Access Point<a class="headerlink" href="#connecting-to-wifi-access-point" title="Permalink to this headline">¶</a></h2>
+<p>Jackal&#8217;s standard wireless network manager is <a class="reference external" href="https://launchpad.net/wicd">wicd</a>. To connect to an access point in your lab, run:</p>
+<div class="highlight-bash"><div class="highlight"><pre>wicd-curses
+</pre></div>
+</div>
+<p>You should see a browsable list of networks which the robot has detected. Use arrow keys to select the one you
+would like to connect to, and then press the right arrow to configure it. You can enter your network&#8217;s password
+near the bottom of the page, and note that you must select the correct encryption scheme; most modern networks
+use <tt class="docutils literal"><span class="pre">WPA1/2</span> <span class="pre">Passphrase</span></tt>, so if that&#8217;s you, make sure that option is selected. You also likely want to select
+the option to automatically reconnect to this network, so that Jackal will be there for you on your wireless
+automatically in the future.</p>
+<p>When you&#8217;re finished, press F10 to save, and then C to connect.</p>
+<p>Wicd will tell you in the footer what IP address it was given by your lab&#8217;s access point, so you can now log out,
+remove the network cable, and reconnect over wireless. When you&#8217;ve confirmed that all this is working as expected,
+close up Jackal&#8217;s chassis.</p>
 </div>
 <div class="section" id="remote-ros-connection">
-<h2>Remote ROS Connection<a class="headerlink" href="#remote-ros-connection" title="Permalink to this headline">¶</a></h2>
+<span id="remote"></span><h2>Remote ROS Connection<a class="headerlink" href="#remote-ros-connection" title="Permalink to this headline">¶</a></h2>
+<p>To use ROS desktop tools, you&#8217;ll need your computer to be able to connect to Jackal&#8217;s ROS master. This can be a
+tricky process, but we&#8217;ve tried to make it as simple as possible.</p>
+<p>In order for the ROS tools on your computer to talk to Jackal, they need to know two things:</p>
+<ul class="simple">
+<li>How to find the ROS master, which is set in the <tt class="docutils literal"><span class="pre">ROS_MASTER_URI</span></tt> environment variable, and</li>
+<li>How processes on the other computer can find <em>your computer</em>, which is the <tt class="docutils literal"><span class="pre">ROS_IP</span></tt> environment variable.</li>
+</ul>
+<p>The suggested pattern is to create a file in your home directory called <tt class="docutils literal"><span class="pre">remote-jackal.sh</span></tt> with the following
+contents:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nb">export </span><span class="nv">ROS_MASTER_URI</span><span class="o">=</span>http://10.25.0.101:11311  <span class="c"># Jackal&#39;s wireless IP address</span>
+<span class="nb">export </span><span class="nv">ROS_IP</span><span class="o">=</span>10.25.0.102                       <span class="c"># Your laptop&#39;s wireless IP address</span>
+</pre></div>
 </div>
-<div class="section" id="advanced-hosting-wifi-access-point">
-<h2>Advanced: Hosting Wifi Access Point<a class="headerlink" href="#advanced-hosting-wifi-access-point" title="Permalink to this headline">¶</a></h2>
+<p>Then, when you&#8217;re ready to communicate remotely with Jackal, you can source that script like so, thus defining
+those two key environment variables in the present context.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nb">source </span>remote-jackal.sh
+</pre></div>
+</div>
+<p>Now, when you run commands like <tt class="docutils literal"><span class="pre">rostopic</span> <span class="pre">list</span></tt>, <tt class="docutils literal"><span class="pre">rostopic</span> <span class="pre">echo</span></tt>, <tt class="docutils literal"><span class="pre">rosnode</span> <span class="pre">list</span></tt>, and others, the output
+you see should reflect the activity on Jackal&#8217;s ROS master, rather than on your own machine. Once you&#8217;ve
+verified the basics (list, echo) from the prompt, try launching some of the standard visual ROS tools:</p>
+<div class="highlight-bash"><div class="highlight"><pre>roslaunch jackal_viz view_robot.launch
+rosrun rqt_robot_monitor rqt_robot_monitor
+rosrun rqt_console rqt_console
+</pre></div>
+</div>
+<p>If there are particular <a class="reference external" href="http://wiki.ros.org/rqt">rqt</a> widgets you find yourself using a lot, you may find it an advantage to dock them together
+and then export this configuration as the default RQT perspective. Then, to bring up your standard GUI, you can simply
+run:</p>
+<div class="highlight-bash"><div class="highlight"><pre>rqt
+</pre></div>
+</div>
+</div>
+<div class="section" id="advanced-hosting-a-wifi-access-point">
+<h2>Advanced: Hosting a Wifi Access Point<a class="headerlink" href="#advanced-hosting-a-wifi-access-point" title="Permalink to this headline">¶</a></h2>
+<p>The default network manager (wicd) only supports joining existing networks. It does not support creating its own wireless AP.
+However, there is experimental support in Jackal for a modern network manager called <a class="reference external" href="https://01.org/connman">connman</a>, which does.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">You are unlikely to damage your hardware by switching Jackal from wicd to connman, but it&#8217;s possible
+you could end up with a platform which will need to be <a class="reference internal" href="update.html#scratch"><em>reflashed back to the factory state</em></a> in
+order to be usable. If you&#8217;re comfortable with this and have backed up your data, proceed.</p>
+</div>
+<p>Add the PPA which makes up-to-date connman releases available to Ubuntu 14.04, and install connman.</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo add-apt-repository ppa:mikepurvis/network
+sudo apt-get update
+sudo apt-get install connman
+</pre></div>
+</div>
+<p>Now edit the upstart job file in <tt class="docutils literal"><span class="pre">/etc/init/connman.conf</span></tt>. Suggested configuration:</p>
+<div class="highlight-bash"><div class="highlight"><pre>description <span class="s2">&quot;Connection Manager&quot;</span>
+
+start on started dbus
+stop on stopping dbus
+
+console log
+respawn
+
+<span class="nb">exec </span>connmand --nobacktrace -n -c /etc/connman/main.conf -I eth1 -I hci0
+</pre></div>
+</div>
+<p>And edit connman&#8217;s general configuration in <tt class="docutils literal"><span class="pre">/etc/connman/main.conf</span></tt>. Suggested:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>General<span class="o">]</span>
+<span class="nv">TetheringTechnologies</span> <span class="o">=</span> wifi
+<span class="nv">PersistentTetheringMode</span> <span class="o">=</span> <span class="nb">true</span>
+</pre></div>
+</div>
+<p>Now, use the connmanctl command-line interface to set up an AP, which connman calls &#8220;tethering&#8221; mode:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>connmanctl
+connmanctl&gt; <span class="nb">enable </span>wifi
+connmanctl&gt; tether wifi on Jackal clearpath
+</pre></div>
+</div>
+<p>If you want to use connman to connect to another AP rather than host:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>connmanctl
+connmanctl&gt; tether wifi off
+connmanctl&gt; agent on
+connmanctl&gt; scan wifi
+connmanctl&gt; services
+connmanctl&gt; connect wifi_12345_67890_managed_psk
+</pre></div>
+</div>
+<p>Use as the argument to <tt class="docutils literal"><span class="pre">connect</span></tt> one of the services listed in the <tt class="docutils literal"><span class="pre">services</span></tt> output. You will be interrogated for
+the network&#8217;s password, which is then cached in <tt class="docutils literal"><span class="pre">/var/lib/connman/</span></tt>.</p>
 </div>
 </div>
 
@@ -73,24 +179,29 @@
         </div>
       </div>
       <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Setting Up Jackal&#8217;s Network</a><ul>
-<li><a class="reference internal" href="#first-connection">First Connection</a></li>
-<li><a class="reference internal" href="#connecting-to-wifi-access-point">Connecting to Wifi Access Point</a></li>
-<li><a class="reference internal" href="#remote-ros-connection">Remote ROS Connection</a></li>
-<li><a class="reference internal" href="#advanced-hosting-wifi-access-point">Advanced: Hosting Wifi Access Point</a></li>
+        <div class="sphinxsidebarwrapper"><h4>Contents</h4>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulation.html">Simulating Jackal</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="navigation.html">Navigating with Jackal</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Setting Up Jackal&#8217;s Network</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="startup.html">Extending Jackal&#8217;s Startup</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="calibration.html">Calibrating Jackal&#8217;s IMU</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="update.html">Keeping Jackal Updated</a><ul class="simple">
 </ul>
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="navigation.html"
-                        title="previous chapter">Navigating with Jackal</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="startup.html"
-                        title="next chapter">Extending Jackal&#8217;s Startup</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/network.txt"

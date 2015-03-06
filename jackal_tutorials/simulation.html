@@ -59,34 +59,61 @@ robot development. In this tutorial, we will go through the basics of starting G
 your Jackal around.</p>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>To get started with the Jackal simulation, make sure you have a <a class="reference external" href="http://wiki.ros.org/ROS/Installation">ROS installation</a> set up on your
-Ubuntu desktop, and install the Jackal-specific metapackages for desktop and simulation:</p>
+<p>To get started with the Jackal simulation, make sure you have a <a class="reference external" href="http://wiki.ros.org/ROS/Installation">working ROS installation</a>
+set up on your Ubuntu desktop, and install the Jackal-specific metapackages for desktop and simulation:</p>
 <pre class="literal-block">
 sudo apt-get install ros-indigo-jackal-simulator ros-indigo-jackal-desktop
 </pre>
 </div>
 <div class="section" id="launch-gazebo">
 <h2>Launch Gazebo<a class="headerlink" href="#launch-gazebo" title="Permalink to this headline">¶</a></h2>
-<p>We will be using two tools for our Jackal simulation, the first being Gazebo. This is where we get a realistic simulation of our robot, including wheel slippage, skidding, and inertia. It is also possible to insert objects and load maps into Gazebo to simulate sensor data, which we will see in a following tutorial. For now begin by launching gazebo:</p>
+<p>Gazebo is the most common simulation tool used in ROS. Jackal&#8217;s model in Gazebo include reasonable
+approximations of its dynamics, including wheel slippage, skidding, and inertia. To launch simulated
+Jackal in a simple example world, run the following command:</p>
 <div class="highlight-bash"><div class="highlight"><pre>roslaunch jackal_gazebo jackal_world.launch
 </pre></div>
 </div>
-<p>attachment:Gazebo.png</p>
+<p>You should see the following window appear, or something like it. You can adjust the camera angle by
+clicking and dragging while holding CTRL, ALT, or the shift key:</p>
+<img alt="Simulated Jackal in the Race World." src="_images/gazebo-jackal-race.png" />
+<p>The window which you are looking at is the Gazebo Client. This window shows you the &#8220;true&#8221; state of the
+simulated world which the robot exists in. It communicates on the backend with the Gazebo Server, which
+is doing the heavy lifting of actually maintaining the simulated world. At the moment, you&#8217;re running
+both the client and server locally on your own machine, but some advanced users may choose to run heavy
+duty simulations on separate hardware and connect to them over the network.</p>
+<p>Note that like Jackal itself, Jackal&#8217;s simulator comes in multiple flavours called configs. A common
+one which you will need often is the <tt class="docutils literal"><span class="pre">front_laser</span></tt> config. If you close the Gazebo window, and then
+CTRL-C out of the terminal process, you can re-launch the simulator with a specific config:</p>
+<div class="highlight-bash"><div class="highlight"><pre>roslaunch jackal_gazebo jackal_world.launch config:<span class="o">=</span>front_laser
+</pre></div>
+</div>
+<p>You should now see the simulator running with the simulated SICK LMS111 laser present:</p>
+<img alt="Simulated Jackal in the Race World with SICK LMS111." src="_images/gazebo-jackal-race-laser.png" />
+<p>Gazebo not only simulates the physical presence of the laser scanner, it also provides simulated data
+which reflects the robot&#8217;s surroundings in its simulated world. We will visualize the simulated laser
+scanner data shortly.</p>
 </div>
 <div class="section" id="launch-rviz">
 <h2>Launch rviz<a class="headerlink" href="#launch-rviz" title="Permalink to this headline">¶</a></h2>
-<p>The other tool we will be using is rviz. This allows us to see sensor data from a robot, and give it commands.
-Unlike Gazebo, rviz is not a simulation, only a visualizer. You can using the following launch invocation to
-start rviz with a pre-cooked configuration suitable for visualizing standard Jackal:</p>
+<p>The next tool we will encounter is <a class="reference external" href="http://wiki.ros.org/rviz">rviz</a>. Although superficially similar in appearance to Gazebo,
+rviz has a very different purpose— unlike Gazebo, which shows the reality of the simulated world, rviz shows
+the robot&#8217;s <em>perception</em> of its world, whether real or simulated. So while Gazebo won&#8217;t be used with your
+real Jackal, rviz is used with both.</p>
+<p>You can using the following launch invocation to start rviz with a pre-cooked configuration suitable for
+visualizing any standard Jackal config:</p>
 <div class="highlight-bash"><div class="highlight"><pre>roslaunch jackal_viz view_robot.launch
 </pre></div>
 </div>
-<p>attachment:RViz.png</p>
+<p>You should see rviz appear:</p>
+<img alt="Jackal with laser scanner in rviz." src="_images/rviz-jackal-laser.png" />
+<p>The rviz display only shows what the robot knows about its world, which presently, is nothing. Because the
+robot doesn&#8217;t yet know about the barriers which exist in its Gazebo world, they&#8217;re not shown here.</p>
 </div>
 <div class="section" id="driving-jackal">
 <h2>Driving Jackal<a class="headerlink" href="#driving-jackal" title="Permalink to this headline">¶</a></h2>
-<p>Interactive markers are the simplest way to drive Jackal. To do this, select the Interact tool from the
-top toolbar in rviz. You should see red arrows and a blue circle appear around the Jackal model.</p>
+<p>What is shown, however, is Jackal&#8217;s interactive markers. These are the simplest way to command your robot
+to move around. If you don&#8217;t see them in your rviz display, select the Interact tool from the top toolbar.
+You should see red arrows and a blue circle appear around the Jackal model.</p>
 <p>Drag the red arrows in Rviz to move in the linear x and the blue circle to move in the angular z. Rviz shows you
 Jackal moving relative to its odometric frame, but it is also moving relative to the simulated world supplied by
 Gazebo. If you click over to the Gazebo window, you will see Jackal moving within its simulated world. Or, if you
@@ -95,6 +122,20 @@ drive real Jackal using this method, it will have moved in the real world.</p>
 topic to drive Jackal, either real or simulated. This is the standard ROS interface to differential-drive and
 holonomic ground vehicles.</p>
 </div>
+<div class="section" id="visualizing-sensors">
+<h2>Visualizing Sensors<a class="headerlink" href="#visualizing-sensors" title="Permalink to this headline">¶</a></h2>
+<p>The rviz tool is capable of visualizing many common robotic sensors, as well as other data feeds which can give
+us clues as to what the robot is doing and why. A great place to start with this is adding the
+<a class="reference external" href="http://wiki.ros.org/rviz/DisplayTypes/LaserScan">LaserScan</a> plugin to visualize the laser scans being produced by the
+simulated LMS111. In the left panel, click the &#8220;Add&#8221; button, then select the &#8220;Topics&#8221; tab, and then select the
+<tt class="docutils literal"><span class="pre">/scan</span></tt> topic:</p>
+<img alt="Adding a laser scan visualization to Jackal." src="_images/rviz-visualize-laser.png" />
+<p>Click OK, and you should see laser scan points now visible in the rviz window, relative to the robot:</p>
+<img alt="Visualizing Jackal with simulated laser scans." src="_images/rviz-laser-scan.png" />
+<p>If you use the interactive markers to drive around, you&#8217;ll notice that the laser scan points move a little bit
+but generally stay where they are. This is the first step toward map making using <a class="reference external" href="http://wiki.ros.org/gmapping">gmapping</a>, which
+is covered in the next tutorial, <a class="reference internal" href="navigation.html"><em>Navigating with Jackal</em></a>.</p>
+</div>
 </div>
 
 
@@ -102,24 +143,29 @@ holonomic ground vehicles.</p>
         </div>
       </div>
       <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Simulating Jackal</a><ul>
-<li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#launch-gazebo">Launch Gazebo</a></li>
-<li><a class="reference internal" href="#launch-rviz">Launch rviz</a></li>
-<li><a class="reference internal" href="#driving-jackal">Driving Jackal</a></li>
+        <div class="sphinxsidebarwrapper"><h4>Contents</h4>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Simulating Jackal</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="navigation.html">Navigating with Jackal</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="network.html">Setting Up Jackal&#8217;s Network</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="startup.html">Extending Jackal&#8217;s Startup</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="calibration.html">Calibrating Jackal&#8217;s IMU</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="update.html">Keeping Jackal Updated</a><ul class="simple">
 </ul>
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">Jackal Tutorials</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="navigation.html"
-                        title="next chapter">Navigating with Jackal</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/simulation.txt"

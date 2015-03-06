@@ -54,14 +54,48 @@
             
   <div class="section" id="extending-jackal-s-startup">
 <h1>Extending Jackal&#8217;s Startup<a class="headerlink" href="#extending-jackal-s-startup" title="Permalink to this headline">¶</a></h1>
+<p>Now that&#8217;s you&#8217;ve had Jackal for a while, you may be interested in how to extend it— perhaps add some more payloads,
+or augment the URDF.</p>
 <div class="section" id="startup-launch-context">
 <h2>Startup Launch Context<a class="headerlink" href="#startup-launch-context" title="Permalink to this headline">¶</a></h2>
+<p>When ROS packages are grouped together in a directory and then built as one, the result is referred to as a
+workspace. Each workspace generates a <tt class="docutils literal"><span class="pre">setup.bash</span></tt> file which the user may source in order to correctly
+set up important environment variables such as <tt class="docutils literal"><span class="pre">PATH</span></tt>, <tt class="docutils literal"><span class="pre">PYTHONPATH</span></tt>, and <tt class="docutils literal"><span class="pre">CMAKE_PREFIX_PATH</span></tt>.</p>
+<p>The standard system-wide setup file is in <tt class="docutils literal"><span class="pre">opt</span></tt>:</p>
+<pre class="literal-block">
+source /opt/ros/indigo/setup.bash
+</pre>
+<p>When you run this command, you&#8217;ll have access to <cite>rosrun</cite>, <cite>roslaunch</cite>, and all the other tools and packages
+installed on your system from debian packages.</p>
+<p>However, sometimes you want to add additional system-specific environment variables, or perhaps packages built
+from source. For this reason, Clearpath platforms use a wrapper setup file, located in <tt class="docutils literal"><span class="pre">/etc/ros</span></tt>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nb">source</span> /etc/ros/setup.bash
+</pre></div>
 </div>
-<div class="section" id="adding-launch-files">
-<h2>Adding Launch Files<a class="headerlink" href="#adding-launch-files" title="Permalink to this headline">¶</a></h2>
+<p>This is the setup file which gets sourced by Jackal&#8217;s background launch job, and in the default configuration,
+it is also sourced on your login session. For this reason it can be considered the &#8220;global&#8221; setup file for
+Jackal&#8217;s ROS installation.</p>
+<p>This file sets some environment variables and then sources a chosen ROS workspace, so it is one of your primary
+modification points for altering how Jackal launches.</p>
+</div>
+<div class="section" id="launch-files">
+<h2>Launch Files<a class="headerlink" href="#launch-files" title="Permalink to this headline">¶</a></h2>
+<p>The second major modification point is the <tt class="docutils literal"><span class="pre">/etc/ros/|ros_distro|/ros.d</span></tt> directory. This location contains the
+launch files associated with the <tt class="docutils literal"><span class="pre">ros</span></tt> background job. If you add launch files here, they will be launched with
+Jackal&#8217;s startup.</p>
+<p>However, it&#8217;s important to note that in the default configuration, any launch files you add may only reference ROS
+software installed in <tt class="docutils literal"><span class="pre">/opt/ros/indigo/</span></tt>. If you want to launch something from workspace in
+the home directory, you must change <tt class="docutils literal"><span class="pre">/etc/ros/setup.bash</span></tt> to source that workspace&#8217;s setup file rather than the
+one from <tt class="docutils literal"><span class="pre">opt</span></tt>.</p>
 </div>
 <div class="section" id="adding-urdf">
 <h2>Adding URDF<a class="headerlink" href="#adding-urdf" title="Permalink to this headline">¶</a></h2>
+<p>There are two possible approaches to augmenting Jackal&#8217;s URDF. The first is that you may simply set the
+<tt class="docutils literal"><span class="pre">JACKAL_URDF_EXTRAS</span></tt> environment variable in <tt class="docutils literal"><span class="pre">/etc/ros/setup.bash</span></tt>. By default, it points to an empty dummy file,
+but you can point it to a file of additional links and joints which you would like mixed into Jackal&#8217;s URDF (via
+xacro) at runtime.</p>
+<p>The second, more sophisticated way to modify the URDF is to create a <em>new</em> package for your own robot, and build
+your own URDF which wraps the one provided by <a class="reference external" href="http://wiki.ros.org/jackal_description">jackal_description</a>.</p>
 </div>
 <div class="section" id="putting-it-all-together">
 <h2>Putting It All Together<a class="headerlink" href="#putting-it-all-together" title="Permalink to this headline">¶</a></h2>
@@ -73,24 +107,29 @@
         </div>
       </div>
       <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Extending Jackal&#8217;s Startup</a><ul>
-<li><a class="reference internal" href="#startup-launch-context">Startup Launch Context</a></li>
-<li><a class="reference internal" href="#adding-launch-files">Adding Launch Files</a></li>
-<li><a class="reference internal" href="#adding-urdf">Adding URDF</a></li>
-<li><a class="reference internal" href="#putting-it-all-together">Putting It All Together</a></li>
+        <div class="sphinxsidebarwrapper"><h4>Contents</h4>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulation.html">Simulating Jackal</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="navigation.html">Navigating with Jackal</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="network.html">Setting Up Jackal&#8217;s Network</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Extending Jackal&#8217;s Startup</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="calibration.html">Calibrating Jackal&#8217;s IMU</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="update.html">Keeping Jackal Updated</a><ul class="simple">
 </ul>
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="network.html"
-                        title="previous chapter">Setting Up Jackal&#8217;s Network</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="calibration.html"
-                        title="next chapter">Calibrating Jackal&#8217;s IMU</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/startup.txt"

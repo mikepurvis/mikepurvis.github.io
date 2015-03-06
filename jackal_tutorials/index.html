@@ -50,57 +50,20 @@
             
   <div class="section" id="jackal-tutorials">
 <h1>Jackal Tutorials<a class="headerlink" href="#jackal-tutorials" title="Permalink to this headline">¶</a></h1>
-<p>This package supplies Sphinx-based tutorial content to assist you with setting up and operating your <a class="reference external" href="http://www.clearpathrobotics.com/jackal/">Jackal</a>.
-The tutorials topics are presented in the suggested reading order.</p>
+<p>This package supplies tutorial content to assist you with setting up and operating your <a class="reference external" href="http://www.clearpathrobotics.com/jackal/">Jackal</a> mobile robot.
+The topics are listed in the left column, and presented in the suggested reading order.</p>
+<p><a class="reference internal" href="simulation.html"><em>Simulation</em></a> is a logical place for most users to start, as this is universally applicable;
+understanding how to effectively operate Jackal in simulation is valuable whether you are in the testing
+phase with software you intend to ultimately deploy on a real Jackal, or you do not have one and are
+simply exploring the platform&#8217;s capabilities.</p>
+<p><a class="reference internal" href="navigation.html"><em>Navigation</em></a> is a follow-on to what is learned in the simulation tutorial, as navigation and
+map-making may be run in the simulated environment. However, this content is applicable to both the simulator
+and the real platform, if equipped with a laser scanner.</p>
+<p>The remainder of the subjects are more applicable to the real robot, and have to do with configuring, using,
+and maintaining the platform. If you are a lab administrator rather than direct platform user, you may wish to
+skip the introductory chapters and jump straight to these ones.</p>
+<img alt="Jackal Robot" src="_images/jackal_banner.png" />
 <div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="simulation.html">Simulating Jackal</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="simulation.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="simulation.html#launch-gazebo">Launch Gazebo</a></li>
-<li class="toctree-l2"><a class="reference internal" href="simulation.html#launch-rviz">Launch rviz</a></li>
-<li class="toctree-l2"><a class="reference internal" href="simulation.html#driving-jackal">Driving Jackal</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="navigation.html">Navigating with Jackal</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="navigation.html#navigation-without-a-map">Navigation Without a Map</a></li>
-<li class="toctree-l2"><a class="reference internal" href="navigation.html#making-a-map">Making a Map</a></li>
-<li class="toctree-l2"><a class="reference internal" href="navigation.html#navigation-with-a-map">Navigation With a Map</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="network.html">Setting Up Jackal&#8217;s Network</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="network.html#first-connection">First Connection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="network.html#connecting-to-wifi-access-point">Connecting to Wifi Access Point</a></li>
-<li class="toctree-l2"><a class="reference internal" href="network.html#remote-ros-connection">Remote ROS Connection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="network.html#advanced-hosting-wifi-access-point">Advanced: Hosting Wifi Access Point</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="startup.html">Extending Jackal&#8217;s Startup</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="startup.html#startup-launch-context">Startup Launch Context</a></li>
-<li class="toctree-l2"><a class="reference internal" href="startup.html#adding-launch-files">Adding Launch Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="startup.html#adding-urdf">Adding URDF</a></li>
-<li class="toctree-l2"><a class="reference internal" href="startup.html#putting-it-all-together">Putting It All Together</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="calibration.html">Calibrating Jackal&#8217;s IMU</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="calibration.html#understanding-compass-calibration">Understanding Compass Calibration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="calibration.html#running-jackal-s-calibration">Running Jackal&#8217;s Calibration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="calibration.html#notes">Notes</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="update.html">Keeping Jackal Updated</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="update.html#getting-new-packages">Getting New Packages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="update.html#mcu-firmware-update">MCU Firmware Update</a></li>
-<li class="toctree-l2"><a class="reference internal" href="update.html#starting-from-scratch">Starting From Scratch</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="section" id="index">
-<h2>Index<a class="headerlink" href="#index" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
-<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
-</ul>
 </div>
 </div>
 
@@ -109,18 +72,29 @@ The tutorials topics are presented in the suggested reading order.</p>
         </div>
       </div>
       <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="#">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Jackal Tutorials</a><ul>
-<li><a class="reference internal" href="#index">Index</a></li>
+        <div class="sphinxsidebarwrapper"><h4>Contents</h4>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulation.html">Simulating Jackal</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="navigation.html">Navigating with Jackal</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="network.html">Setting Up Jackal&#8217;s Network</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="startup.html">Extending Jackal&#8217;s Startup</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="calibration.html">Calibrating Jackal&#8217;s IMU</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="update.html">Keeping Jackal Updated</a><ul class="simple">
 </ul>
 </li>
 </ul>
 
-  <h4>Next topic</h4>
-  <p class="topless"><a href="simulation.html"
-                        title="next chapter">Simulating Jackal</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/index.txt"

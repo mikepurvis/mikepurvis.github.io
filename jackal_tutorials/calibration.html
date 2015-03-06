@@ -54,14 +54,54 @@
             
   <div class="section" id="calibrating-jackal-s-imu">
 <h1>Calibrating Jackal&#8217;s IMU<a class="headerlink" href="#calibrating-jackal-s-imu" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial explains how Jackal&#8217;s compass works and how to calibrate it for top performance.</p>
+<p>Calibrating Jackal&#8217;s magnetometer is a straightforward process. For best performance, it&#8217;s recommended to
+perform this operation on a seasonal basis.</p>
 <div class="section" id="understanding-compass-calibration">
 <h2>Understanding Compass Calibration<a class="headerlink" href="#understanding-compass-calibration" title="Permalink to this headline">¶</a></h2>
+<p>Jackal includes integrated <a class="reference external" href="http://en.wikipedia.org/wiki/Inertial_measurement_unit">inertial measurement</a>, which allows it to estimate its own orientation in space.</p>
+<p>This is achieved using a combination of three sensors: a gyroscope, an accelerometer, and a magnetometer.
+These measure, respectively: angular motion, acceleration, and magnetic field. The angular motion is integrated
+to achieve a relative estimate, which is then anchored to two absolute reference points: the gravity vector
+as supplied by the accelometer, and the magnetic field vector as supplied by the magnetometer.</p>
+<p>Unfortunately, although gravity is pretty consistent about pointing down, the magnetic reference vector
+has an offset due to <a class="reference external" href="http://en.wikipedia.org/wiki/Magnetic_declination">declination</a>, and is also highly subject to disturbance. There&#8217;s little that can be done
+by a disturbance outside of Jackal (for example, driving by a strong magnetic field), but the effect of magnetic
+fields onboard Jackal from the battery, motors, sheet metal parts, etc, can be calibrated away.</p>
+<blockquote>
+<div></div></blockquote>
 </div>
 <div class="section" id="running-jackal-s-calibration">
 <h2>Running Jackal&#8217;s Calibration<a class="headerlink" href="#running-jackal-s-calibration" title="Permalink to this headline">¶</a></h2>
+<p>To run the calibration routine, connect to Jackal by SSH, and execute:</p>
+<div class="highlight-bash"><div class="highlight"><pre>rosrun jackal_base calibrate_compass
+</pre></div>
 </div>
-<div class="section" id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>Jackal should rotate slowly in place for 60 seconds, recording magnetometer data.</p>
+<p>The output will be:</p>
+<div class="highlight-bash"><div class="highlight"><pre>Started rosbag record, duration <span class="m">60</span> seconds, pid <span class="o">[</span>6793<span class="o">]</span>
+Started motion commands, pid <span class="o">[</span>6794<span class="o">]</span>
+<span class="o">[</span> INFO<span class="o">]</span> <span class="o">[</span>1417463864.452760841<span class="o">]</span>: Subscribing to /tf
+<span class="o">[</span> INFO<span class="o">]</span> <span class="o">[</span>1417463864.457840117<span class="o">]</span>: Subscribing to /imu/rpy/raw
+<span class="o">[</span> INFO<span class="o">]</span> <span class="o">[</span>1417463864.462399042<span class="o">]</span>: Subscribing to /imu/data_raw
+<span class="o">[</span> INFO<span class="o">]</span> <span class="o">[</span>1417463864.466624735<span class="o">]</span>: Subscribing to /imu/mag
+<span class="o">[</span> INFO<span class="o">]</span> <span class="o">[</span>1417463864.474944762<span class="o">]</span>: Recording to /tmp/calibrate_compass.xxxx/imu_record.bag.
+Test underway.
+Time remaining: 0
+Shutting down motion <span class="nb">command </span>publisher.
+Waiting <span class="k">for</span> rosbag to shut down.
+Computing magnetic calibration.
+Unable to compute calibration from recorded bag.
+Output in /tmp/compute_output.log
+</pre></div>
+</div>
+<p>Once complete, you will be prompted to enter the user password in order to save the new calibration
+into <tt class="docutils literal"><span class="pre">$ROS_ETC_DIR</span></tt>. Once this is done, restart the ROS service to begin using the new calibration:</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo service jackal restart
+</pre></div>
+</div>
+<p>Calibration should be performed when jackal is first received, and any time the platform is modified by adding
+new peripherals. It is also recommended to recalibrate annually as part of seasonal maintenance.</p>
 </div>
 </div>
 
@@ -70,23 +110,29 @@
         </div>
       </div>
       <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Calibrating Jackal&#8217;s IMU</a><ul>
-<li><a class="reference internal" href="#understanding-compass-calibration">Understanding Compass Calibration</a></li>
-<li><a class="reference internal" href="#running-jackal-s-calibration">Running Jackal&#8217;s Calibration</a></li>
-<li><a class="reference internal" href="#notes">Notes</a></li>
+        <div class="sphinxsidebarwrapper"><h4>Contents</h4>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulation.html">Simulating Jackal</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="navigation.html">Navigating with Jackal</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="network.html">Setting Up Jackal&#8217;s Network</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="startup.html">Extending Jackal&#8217;s Startup</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Calibrating Jackal&#8217;s IMU</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="update.html">Keeping Jackal Updated</a><ul class="simple">
 </ul>
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="startup.html"
-                        title="previous chapter">Extending Jackal&#8217;s Startup</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="update.html"
-                        title="next chapter">Keeping Jackal Updated</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/calibration.txt"
